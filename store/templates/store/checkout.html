@@ -1,0 +1,80 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+	<h2 style="text-align: center ;padding: 5px; color: black;font-size: 50px;border: 10px;background-color: cadetblue;border-radius: 15px">Checkout Page </h2>
+     <div class="row">
+		<div class="col-lg-5">
+			<div class="box-element" id="form-wrapper">
+				<form style="background-color: wheat; text-align: left;border-radius: 10px" method="POST" action="{% url 'checkout'%}">
+					{% csrf_token %}
+					{{ form|crispy }}
+					<br>
+					<input style=" border-radius: 10px" type="submit" class="btn btn-primary mb-2" name="submit" , value='Submit'>
+				</form>
+			</div>
+		</div>
+
+		<div class="col-lg-7">
+			<div style="border-radius: 15px" class="box-element">
+				<a style="border-radius: 15px" class="btn btn-outline-dark" href="{% url 'cart' %}">&#2547; Back to Cart</a>
+				<hr>
+				<h3>Order Summary</h3>
+				<hr>
+				{% for item in items %}
+					<div  class="cart-row" style="background-color: wheat;height: 120px">
+						<div style="flex:2"><a href="{% url 'item_detail' item.product.id %}"><img class="row-image" src="{{ item.product.get_imageURL }}" style="width: 80px; height: 120px;margin-left: 5px"></a></div>
+						<div style="flex:2"><p>{{item.product.name}}</p></div>
+						<div style="flex:1"><p>&#2547;{{item.product.price|floatformat:2}}</p></div>
+						<div style="flex:1"><p>x{{item.quantity}}</p></div>
+					</div>
+				{% endfor %}
+                <div>
+                    <div style="text-align: left"><h5 style="float: left ;font-size: 30px">Total Item:   {{total_item_cart}}</h5></div>
+                    <div style="text-align: right"><h5 style="font-size: 30px">Total Bill:   &#2547;{{total_cost_cart}}</h5></div>
+                </div>
+
+
+			</div>
+		</div>
+	</div>
+
+	<br>
+	<br>
+	{% if request.user.is_authenticated %}
+				<h6>Shipping Addresses </h6>
+				<div style="margin: auto ;background-color: wheat" class="box-element">
+					{% for adr in addresses %}
+						<div class="cart-row">
+							<div>
+                                <li>
+                                    <ul>
+                                        <div>Name : <strong><span>{{adr.recepient_fullname}}</span></strong></div>
+                                        <div>  Phone Number : <strong><span>{{adr.phone_no}}</span></strong></div>
+                                        <div>  Address : <strong><span>{{adr.address}}</span></strong> </div>
+                                        <div>  City : <strong><span>{{adr.city}}</span></strong></div>
+                                        <div>  Division : <strong><span>{{adr.division}}</span></strong></div>
+                                        <div>  Zip-Code : <strong><span>{{adr.zipcode}}}</span></strong></div>
+                                    </ul>
+                                </li>
+
+
+								<div class="quantity">
+									<pre><a style="border-radius: 10px" class="btn btn-success" href="{% url 'make_payment' adr.id %}">Use</a></pre>
+								</div>
+								<div class="quantity">
+									<pre><a style="border-radius: 10px" class="btn btn-success" href="{% url 'update_address' adr.id %}">Edit</a></pre>
+								</div>
+								<div class="quantity">
+									<pre><a style="border-radius: 10px" class="btn btn-success" href="{% url 'delete_address' adr.id %}">Delete</a></pre>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+
+	{% endif %}
+	<br><br>
+
+
+{% endblock content %}
